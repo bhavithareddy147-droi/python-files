@@ -1,0 +1,35 @@
+class Solution {
+public:
+    string convert(string s, int numRows) {
+        if (numRows <= 1) {
+            return s; // No zigzag conversion needed for 1 row or less
+        }
+
+        vector<string> rows(numRows); // Create a vector of strings to represent each row
+        int currentRow = 0;
+        bool goingDown = false; // Flag to track the direction of movement (down or up)
+
+        for (char c : s) {
+            rows[currentRow] += c; // Append the current character to the current row
+
+            // Change direction when reaching the top or bottom row
+            if (currentRow == 0 || currentRow == numRows - 1) {
+                goingDown = !goingDown;
+            }
+
+            // Move to the next row based on the current direction
+            if (goingDown) {
+                currentRow++;
+            } else {
+                currentRow--;
+            }
+        }
+
+        string result = "";
+        for (const string& row : rows) {
+            result += row; // Concatenate all rows to form the final string
+        }
+
+        return result;
+    }
+};
