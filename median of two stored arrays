@@ -1,0 +1,49 @@
+#include <vector>
+#include <algorithm>
+
+class Solution {
+public:
+    double findMedianSortedArrays(std::vector<int>& nums1, std::vector<int>& nums2) {
+        // 1. Merge the two sorted arrays into a single vector.
+        std::vector<int> merged_array;
+        merged_array.reserve(nums1.size() + nums2.size()); // Optimize allocation
+
+        int i = 0, j = 0;
+        while (i < nums1.size() && j < nums2.size()) {
+            if (nums1[i] < nums2[j]) {
+                merged_array.push_back(nums1[i]);
+                i++;
+            } else {
+                merged_array.push_back(nums2[j]);
+                j++;
+            }
+        }
+
+        // Add remaining elements from nums1
+        while (i < nums1.size()) {
+            merged_array.push_back(nums1[i]);
+            i++;
+        }
+        // Add remaining elements from nums2
+        while (j < nums2.size()) {
+            merged_array.push_back(nums2[j]);
+            j++;
+        }
+
+        // 2. Calculate the median from the merged array.
+        int total_size = merged_array.size();
+        if (total_size == 0) {
+            return 0.0; // Handle the edge case where both arrays are empty
+        }
+
+        if (total_size % 2 == 1) {
+            // Odd number of elements: the median is the middle element.
+            return static_cast<double>(merged_array[total_size / 2]);
+        } else {
+            // Even number of elements: the median is the average of the two middle elements.
+            int mid1 = total_size / 2 - 1;
+            int mid2 = total_size / 2;
+            return (static_cast<double>(merged_array[mid1]) + merged_array[mid2]) / 2.0;
+        }
+    }
+};
