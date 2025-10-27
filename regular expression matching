@@ -1,0 +1,52 @@
+class Solution {
+public:
+    bool isMatch(string s, string p) {
+        int n = s.length();
+        int m = p.length();
+
+        // dp[i][j] will be true if s[0...i-1] matches p[0...j-1]
+        vector<vector<bool>> dp(n + 1, vector<bool>(m + 1, false));
+
+        // Base case: empty string matches empty pattern
+        dp[0][0] = true;
+
+        // Handle patterns with '*' at the beginning (e.g., "a*b*")
+        // An empty string can match a pattern like "a*b*" if 'a*' and 'b*' can match empty sequences.
+        for (int j = 1; j <= m; ++j) {
+            if (p[j - 1] == '*') {
+                // If the current pattern character is '*', it can match an empty sequence.
+                // So, dp[0][j] depends on dp[0][j-2] (skipping the current character and its preceding character).
+                dp[0][j] = dp[0][j - 2];
+            }
+        }
+
+        // Fill the DP table
+        for (int i = 1; i <= n; ++i) {
+            for (int j = 1; j <= m; ++j) {
+                // Case 1: Current characters match or pattern has '.'
+                if (p[j - 1] == '.' || p[j - 1] == s[i - 1]) {
+                    dp[i][j] = dp[i - 1][j - 1];
+                }
+                // Case 2: Current pattern character is '*'
+                else if (p[j - 1] == '*') {
+                    // Option A: '*' matches zero occurrences of the preceding character
+                    // In this case, we effectively ignore p[j-2] and p[j-1]
+                    dp[i][j] = dp[i][j - 2];
+
+                    // Option B: '*' matches one or more occurrences of the preceding character
+                    // If the preceding character (p[j-2]) matches s[i-1] or is '.',
+                    // then '*' can extend the match from dp[i-1][j].
+                    if (p[j - 2] == '.' || p[j - 2] == s[i - 1]) {
+                        dp[i][j] = dp[i][j] || dp[i - 1][j];
+                    }
+                }
+                // Case 3: Current characters do not match and pattern is not '.' or '*'
+                else {
+                    dp[i][j] = false;
+                }
+            }
+        }
+
+        return dp[n][m];
+    }
+};
